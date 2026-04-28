@@ -42,17 +42,52 @@ Application disponible sur [http://localhost:3000](http://localhost:3000).
 
 - Catalogue de trottinettes (fiches, prix, autonomie, vitesse, garantie)
 - Commandes client et panier
-- Gestion des stocks atelier (entrees/sorties/ajustements)
-- Suivi maintenance par technicien
-- Gestion utilisateurs et roles (client, technicien, admin)
+- Gestion des stocks
+- Facturation
+- Gestion utilisateurs et roles
 
 ## Schema Prisma
 
 Le schema est dans `prisma/schema.prisma` avec les modeles:
 
-- `User`
-- `ScooterModel`
-- `Order`
-- `OrderItem`
-- `StockMovement`
-- `MaintenanceRecord`
+- `Utilisateur`
+- `Commande`
+- `Facture`
+- `LigneCommande`
+- `Categorie`
+- `Trottinette`
+- `Stock`
+
+## Workflow equipe (obligatoire)
+
+Pour garder un historique clair quand on travaille a plusieurs:
+
+- Toujours creer **une branche par fonctionnalite** ou correctif.
+- Ne pas developper directement sur `main`.
+- Ouvrir une PR pour relecture avant merge.
+
+### Convention de nommage des branches
+
+- `feat/nom-fonctionnalite`
+- `fix/nom-correctif`
+- `chore/tache-technique`
+
+Exemples:
+
+- `feat/catalogue-filtres`
+- `feat/panier-client`
+- `fix/calcul-montant-commande`
+
+### Convention des messages de commit
+
+Utiliser des commits explicites avec les prefixes:
+
+- `feat(...)` pour une nouvelle fonctionnalite
+- `fix(...)` pour une correction de bug
+
+Exemples:
+
+- `feat(catalogue): ajout du filtre par autonomie`
+- `feat(commande): creation de la table ligne_commandes`
+- `fix(stock): correction du calcul de quantite disponible`
+- `fix(auth): verifie le role admin sur la route back-office`
