@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ecoride-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ecoride
+      POSTGRES_USER: ecoride
+      POSTGRES_PASSWORD: ecoride_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ecoride_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecoride -d ecoride"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  ecoride_pgdata:

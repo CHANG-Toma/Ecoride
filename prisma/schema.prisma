@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Utilisateur {
+  idClient         Int        @id @default(autoincrement()) @map("id_client")
+  nom              String
+  prenom           String
+  email            String     @unique
+  motDePasse       String     @map("mot_de_passe")
+  telephone        String?
+  adresse          String
+  ville            String
+  codePostal       String     @map("code_postal")
+  role             String
+  dateInscription  DateTime   @default(now()) @map("date_inscription")
+  commandes        Commande[]
+
+  @@map("utilisateurs")
+}
+
+model Commande {
+  idCommandes   Int             @id @default(autoincrement()) @map("id_commandes")
+  idClient      Int             @map("id_client")
+  dateCommande  DateTime        @default(now()) @map("date_commande")
+  statut        String
+  montantTotal  Decimal         @db.Decimal(10, 2) @map("montant_total")
+  utilisateur   Utilisateur     @relation(fields: [idClient], references: [idClient], onDelete: Restrict)
+  facture       Facture?
+  lignes        LigneCommande[]
+
+  @@index([idClient])
+  @@map("commandes")
+}
+
+model Facture {
+  idFactures      Int      @id @default(autoincrement()) @map("id_factures")
+  idCommandes     Int      @unique @map("id_commandes")
+  dateFacture     DateTime @default(now()) @map("date_facture")
+  montantTotal    Decimal  @db.Decimal(10, 2) @map("montant_total")
+  modePaiement    String   @map("mode_paiement")
+  statutPaiement  String   @map("statut_paiement")
+  commande        Commande @relation(fields: [idCommandes], references: [idCommandes], onDelete: Restrict)
+
+  @@map("factures")
+}
+
+model LigneCommande {
+  idLigneCommandes Int         @id @default(autoincrement()) @map("id_ligne_commandes")
+  idCommandes      Int         @map("id_commandes")
+  idTrottinettes   Int         @map("id_trottinettes")
+  quantite         Int
+  prixUnitaire     Decimal     @db.Decimal(10, 2) @map("prix_unitaire")
+  commande         Commande    @relation(fields: [idCommandes], references: [idCommandes], onDelete: Restrict)
+  trottinette      Trottinette @relation(fields: [idTrottinettes], references: [idTrottinettes], onDelete: Restrict)
+
+  @@index([idCommandes])
+  @@index([idTrottinettes])
+  @@map("ligne_commandes")
+}
+
+model Categorie {
+  idCategories Int          @id @default(autoincrement()) @map("id_categories")
+  nom          String
+  description  String?
+  trottinettes Trottinette[]
+
+  @@map("categories")
+}
+
+model Trottinette {
+  idTrottinettes Int             @id @default(autoincrement()) @map("id_trottinettes")
+  idCategories   Int             @map("id_categories")
+  modele         String
+  poids          Decimal         @db.Decimal(6, 2)
+  vitesseMax     Int             @map("vitesse_max")
+  prix           Decimal         @db.Decimal(10, 2)
+  autonomie      Int
+  isDisponible   Boolean         @default(true)
+  categorie      Categorie       @relation(fields: [idCategories], references: [idCategories], onDelete: Restrict)
+  lignesCommande LigneCommande[]
+  stock          Stock?
+
+  @@index([idCategories])
+  @@map("trottinettes")
+}
+
+model Stock {
+  idStock            Int         @id @default(autoincrement()) @map("id_stock")
+  idTrottinettes     Int         @unique @map("id_trottinettes")
+  quantiteDisponible Int         @default(0) @map("quantite_disponible")
+  seuilAlerte        Int         @default(0) @map("seuil_alerte")
+  trottinette        Trottinette @relation(fields: [idTrottinettes], references: [idTrottinettes], onDelete: Restrict)
+
+  @@map("stocks")
+}
