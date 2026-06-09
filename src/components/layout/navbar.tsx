@@ -5,9 +5,9 @@ import { getSession } from "@/lib/auth/session";
 import { getDefaultRedirectForRole } from "@/lib/auth/roles";
 
 const links = [
-  { label: "Catalogue", href: "#" },
+  { label: "Catalogue", href: "/" },
+  { label: "Paiement", href: "/paiement" },
   { label: "Support", href: "#" },
-  { label: "A propos", href: "#" },
 ];
 
 export async function Navbar() {
@@ -25,13 +25,13 @@ export async function Navbar() {
 
         <nav className="hidden items-center gap-6 md:flex">
           {links.map((link) => (
-            <a
+            <Link
               key={link.label}
               className="text-sm text-slate-600 hover:text-[var(--accent-strong)]"
               href={link.href}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
