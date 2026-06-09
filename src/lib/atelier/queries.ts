@@ -3,7 +3,13 @@
  * Chaque fonction alimente un onglet ou un formulaire de /atelier.
  */
 import { prisma } from "@/lib/prisma";
-import type { ReparationItem, SortieStockItem, StockInventoryItem, TrottinetteOption } from "@/types/atelier";
+import type {
+  EntreeStockItem,
+  ReparationItem,
+  SortieStockItem,
+  StockInventoryItem,
+  TrottinetteOption,
+} from "@/types/atelier";
 
 /** US-A1 — Recupere l'inventaire complet avec alerte si stock <= seuil. */
 export async function getStockInventory(): Promise<StockInventoryItem[]> {
@@ -81,6 +87,27 @@ export async function getRecentSortiesStock(): Promise<SortieStockItem[]> {
     quantite: item.quantite,
     motif: item.motif,
     dateSortie: item.dateSortie.toISOString(),
+  }));
+}
+
+/** Journal des 15 dernieres entrees de stock (retours en inventaire). */
+export async function getRecentEntreesStock(): Promise<EntreeStockItem[]> {
+  const entrees = await prisma.entreeStock.findMany({
+    include: {
+      trottinette: true,
+      technicien: true,
+    },
+    orderBy: { dateEntree: "desc" },
+    take: 15,
+  });
+
+  return entrees.map((item) => ({
+    idEntreeStock: item.idEntreeStock,
+    modele: item.trottinette.modele,
+    technicien: `${item.technicien.prenom} ${item.technicien.nom}`,
+    quantite: item.quantite,
+    motif: item.motif,
+    dateEntree: item.dateEntree.toISOString(),
   }));
 }
 

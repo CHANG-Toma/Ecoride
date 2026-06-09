@@ -41,6 +41,16 @@ export type SortieStockItem = {
   dateSortie: string;
 };
 
+/** Entree de stock (retour en inventaire) tracee en base. */
+export type EntreeStockItem = {
+  idEntreeStock: number;
+  modele: string;
+  technicien: string;
+  quantite: number;
+  motif: string | null;
+  dateEntree: string;
+};
+
 /** Retour des formulaires atelier (message d'erreur ou de succes). */
 export type AtelierActionState = {
   error?: string;

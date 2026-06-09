@@ -85,6 +85,60 @@ export async function sortieStockAction(
 }
 
 /**
+ * Enregistre une entree de stock (retour en inventaire).
+ * Incremente la quantite disponible et trace l'operation en base.
+ */
+export async function entreeStockAction(
+  _prevState: AtelierActionState,
+  formData: FormData,
+): Promise<AtelierActionState> {
+  try {
+    const session = await requireTechnicienSession();
+    const idTrottinettes = Number(formData.get("idTrottinettes"));
+    const quantite = Number(formData.get("quantite"));
+    const motif = String(formData.get("motif") ?? "").trim() || null;
+
+    if (!idTrottinettes || Number.isNaN(idTrottinettes)) {
+      return { error: "Selectionnez un modele." };
+    }
+
+    if (!quantite || quantite < 1 || !Number.isInteger(quantite)) {
+      return { error: "La quantite doit etre un entier positif." };
+    }
+
+    const stock = await prisma.stock.findUnique({
+      where: { idTrottinettes },
+    });
+
+    if (!stock) {
+      return { error: "Stock introuvable pour ce modele." };
+    }
+
+    await prisma.$transaction([
+      prisma.stock.update({
+        where: { idTrottinettes },
+        data: { quantiteDisponible: { increment: quantite } },
+      }),
+      prisma.entreeStock.create({
+        data: {
+          idTrottinettes,
+          idTechnicien: session.idClient,
+          quantite,
+          motif,
+        },
+      }),
+    ]);
+
+    revalidatePath("/atelier");
+    return { success: `Entree de ${quantite} unite(s) enregistree.` };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Erreur lors de l'entree de stock.",
+    };
+  }
+}
+
+/**
  * US-A2 — Enregistre une reparation SAV.
  * Lie la trottinette, le technicien connecte, le commentaire et le statut.
  */

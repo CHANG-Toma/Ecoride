@@ -22,6 +22,7 @@ model Utilisateur {
   commandes        Commande[]
   reparations      Reparation[]
   sortiesStock     SortieStock[]
+  entreesStock     EntreeStock[]
 
   @@map("utilisateurs")
 }
@@ -89,6 +90,7 @@ model Trottinette {
   stock          Stock?
   reparations    Reparation[]
   sortiesStock   SortieStock[]
+  entreesStock   EntreeStock[]
 
   @@index([idCategories])
   @@map("trottinettes")
@@ -135,4 +137,20 @@ model SortieStock {
   @@index([idTrottinettes])
   @@index([idTechnicien])
   @@map("sorties_stock")
+}
+
+// Retour en stock apres reparation, annulation ou reapprovisionnement atelier.
+model EntreeStock {
+  idEntreeStock  Int         @id @default(autoincrement()) @map("id_entree_stock")
+  idTrottinettes Int         @map("id_trottinettes")
+  idTechnicien   Int         @map("id_technicien")
+  quantite       Int
+  motif          String?
+  dateEntree     DateTime    @default(now()) @map("date_entree")
+  trottinette    Trottinette @relation(fields: [idTrottinettes], references: [idTrottinettes], onDelete: Restrict)
+  technicien     Utilisateur @relation(fields: [idTechnicien], references: [idClient], onDelete: Restrict)
+
+  @@index([idTrottinettes])
+  @@index([idTechnicien])
+  @@map("entrees_stock")
 }

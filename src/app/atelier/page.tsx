@@ -1,17 +1,19 @@
 /**
  * Page principale atelier (bloc 5 — SAV).
  * Accessible aux roles technicien et admin.
- * Affiche les KPIs stock et les 3 onglets : inventaire, sorties, reparations.
+ * Affiche les KPIs stock et les onglets : inventaire, sorties, entrees, reparations.
  */
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { AtelierTabs } from "@/components/atelier/atelier-tabs";
 import { RepairPanel } from "@/components/atelier/repair-panel";
+import { StockEntryForm } from "@/components/atelier/stock-entry-form";
 import { StockExitForm } from "@/components/atelier/stock-exit-form";
 import { StockInventory } from "@/components/atelier/stock-inventory";
 import { getSession } from "@/lib/auth/session";
 import {
   getCategories,
+  getRecentEntreesStock,
   getRecentSortiesStock,
   getReparations,
   getStockInventory,
@@ -34,13 +36,15 @@ export default async function AtelierPage() {
     redirect("/");
   }
 
-  const [inventory, categories, trottinettes, reparations, recentSorties] = await Promise.all([
-    getStockInventory(),
-    getCategories(),
-    getTrottinetteOptions(),
-    getReparations(),
-    getRecentSortiesStock(),
-  ]);
+  const [inventory, categories, trottinettes, reparations, recentSorties, recentEntrees] =
+    await Promise.all([
+      getStockInventory(),
+      getCategories(),
+      getTrottinetteOptions(),
+      getReparations(),
+      getRecentSortiesStock(),
+      getRecentEntreesStock(),
+    ]);
 
   const alertCount = inventory.filter((item) => item.isAlert).length;
 
@@ -88,6 +92,13 @@ export default async function AtelierPage() {
               label: "Sorties de stock",
               content: (
                 <StockExitForm recentSorties={recentSorties} trottinettes={trottinettes} />
+              ),
+            },
+            {
+              id: "entrees",
+              label: "Entrees de stock",
+              content: (
+                <StockEntryForm recentEntrees={recentEntrees} trottinettes={trottinettes} />
               ),
             },
             {

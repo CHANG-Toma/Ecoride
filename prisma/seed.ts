@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 const TEST_PASSWORD = "EcoRide2026!";
 
 async function main() {
+  await prisma.entreeStock.deleteMany();
   await prisma.sortieStock.deleteMany();
   await prisma.reparation.deleteMany();
   await prisma.ligneCommande.deleteMany();

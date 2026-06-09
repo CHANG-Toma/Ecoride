@@ -10,11 +10,15 @@ function createPrismaClient() {
   });
 }
 
+function isStalePrismaClient(client: PrismaClient): boolean {
+  return !("reparation" in client) || !("entreeStock" in client);
+}
+
 function getPrismaClient() {
   const cached = globalForPrisma.prisma;
 
   // Recree le client en dev si le schema a change (ex: nouveaux modeles atelier)
-  if (cached && !("reparation" in cached)) {
+  if (cached && isStalePrismaClient(cached)) {
     void cached.$disconnect();
     globalForPrisma.prisma = undefined;
   }
