@@ -145,6 +145,77 @@ async function main() {
     });
   }
 
+  const client = await prisma.utilisateur.findUnique({
+    where: { email: "client@ecoride.test" },
+  });
+  const allTrottinettes = await prisma.trottinette.findMany();
+
+  if (client && allTrottinettes.length >= 3) {
+    const orders = [
+      {
+        dateCommande: new Date("2026-01-15"),
+        statut: "livree",
+        lignes: [{ idx: 0, qty: 1 }, { idx: 1, qty: 2 }],
+      },
+      {
+        dateCommande: new Date("2026-02-03"),
+        statut: "expediee",
+        lignes: [{ idx: 2, qty: 1 }],
+      },
+      {
+        dateCommande: new Date("2026-02-20"),
+        statut: "confirmee",
+        lignes: [{ idx: 3, qty: 1 }, { idx: 4, qty: 1 }],
+      },
+      {
+        dateCommande: new Date("2026-03-10"),
+        statut: "livree",
+        lignes: [{ idx: 0, qty: 1 }],
+      },
+      {
+        dateCommande: new Date("2026-04-05"),
+        statut: "annulee",
+        lignes: [{ idx: 5, qty: 1 }],
+      },
+    ];
+
+    for (const order of orders) {
+      let montantTotal = 0;
+      const lignesData = order.lignes.map(({ idx, qty }) => {
+        const t = allTrottinettes[idx];
+        const prix = Number(t.prix);
+        montantTotal += prix * qty;
+        return {
+          idTrottinettes: t.idTrottinettes,
+          quantite: qty,
+          prixUnitaire: prix,
+        };
+      });
+
+      const commande = await prisma.commande.create({
+        data: {
+          idClient: client.idClient,
+          dateCommande: order.dateCommande,
+          statut: order.statut,
+          montantTotal,
+          lignes: { create: lignesData },
+        },
+      });
+
+      if (order.statut !== "annulee") {
+        await prisma.facture.create({
+          data: {
+            idCommandes: commande.idCommandes,
+            dateFacture: order.dateCommande,
+            montantTotal,
+            modePaiement: "carte",
+            statutPaiement: order.statut === "livree" ? "payee" : "en_attente",
+          },
+        });
+      }
+    }
+  }
+
   console.log("Seed termine.");
   console.log("Comptes de test (mot de passe pour tous):", TEST_PASSWORD);
   console.log("- client@ecoride.test (client)");
