@@ -18,8 +18,10 @@ model Utilisateur {
   ville            String
   codePostal       String     @map("code_postal")
   role             String
-  dateInscription  DateTime   @default(now()) @map("date_inscription")
+  dateInscription  DateTime      @default(now()) @map("date_inscription")
   commandes        Commande[]
+  reparations      Reparation[]
+  sortiesStock     SortieStock[]
 
   @@map("utilisateurs")
 }
@@ -85,11 +87,14 @@ model Trottinette {
   categorie      Categorie       @relation(fields: [idCategories], references: [idCategories], onDelete: Restrict)
   lignesCommande LigneCommande[]
   stock          Stock?
+  reparations    Reparation[]
+  sortiesStock   SortieStock[]
 
   @@index([idCategories])
   @@map("trottinettes")
 }
 
+// Quantites disponibles par modele — utilise par l'inventaire atelier (US-A1).
 model Stock {
   idStock            Int         @id @default(autoincrement()) @map("id_stock")
   idTrottinettes     Int         @unique @map("id_trottinettes")
@@ -98,4 +103,36 @@ model Stock {
   trottinette        Trottinette @relation(fields: [idTrottinettes], references: [idTrottinettes], onDelete: Restrict)
 
   @@map("stocks")
+}
+
+// US-A2 — Suivi des interventions SAV (trottinette, technicien, commentaire).
+model Reparation {
+  idReparations  Int         @id @default(autoincrement()) @map("id_reparations")
+  idTrottinettes Int         @map("id_trottinettes")
+  idTechnicien   Int         @map("id_technicien")
+  dateReparation DateTime    @default(now()) @map("date_reparation")
+  commentaire    String
+  statut         String      @default("terminee")
+  trottinette    Trottinette @relation(fields: [idTrottinettes], references: [idTrottinettes], onDelete: Restrict)
+  technicien     Utilisateur @relation(fields: [idTechnicien], references: [idClient], onDelete: Restrict)
+
+  @@index([idTrottinettes])
+  @@index([idTechnicien])
+  @@map("reparations")
+}
+
+// US-A3 — Trace chaque sortie de stock pour l'historique atelier.
+model SortieStock {
+  idSortieStock  Int         @id @default(autoincrement()) @map("id_sortie_stock")
+  idTrottinettes Int         @map("id_trottinettes")
+  idTechnicien   Int         @map("id_technicien")
+  quantite       Int
+  motif          String?
+  dateSortie     DateTime    @default(now()) @map("date_sortie")
+  trottinette    Trottinette @relation(fields: [idTrottinettes], references: [idTrottinettes], onDelete: Restrict)
+  technicien     Utilisateur @relation(fields: [idTechnicien], references: [idClient], onDelete: Restrict)
+
+  @@index([idTrottinettes])
+  @@index([idTechnicien])
+  @@map("sorties_stock")
 }

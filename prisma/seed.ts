@@ -6,6 +6,8 @@ const prisma = new PrismaClient();
 const TEST_PASSWORD = "EcoRide2026!";
 
 async function main() {
+  await prisma.sortieStock.deleteMany();
+  await prisma.reparation.deleteMany();
   await prisma.ligneCommande.deleteMany();
   await prisma.facture.deleteMany();
   await prisma.commande.deleteMany();
@@ -132,6 +134,8 @@ async function main() {
     },
   ];
 
+  const createdTrottinettes = [];
+
   for (const item of trottinettes) {
     const { stock, ...data } = item;
     const trottinette = await prisma.trottinette.create({ data });
@@ -142,6 +146,31 @@ async function main() {
         quantiteDisponible: stock,
         seuilAlerte: 5,
       },
+    });
+
+    createdTrottinettes.push(trottinette);
+  }
+
+  const technicien = await prisma.utilisateur.findUnique({
+    where: { email: "technicien@ecoride.test" },
+  });
+
+  if (technicien) {
+    await prisma.reparation.createMany({
+      data: [
+        {
+          idTrottinettes: createdTrottinettes[0].idTrottinettes,
+          idTechnicien: technicien.idClient,
+          commentaire: "Revision generale et reglage des freins.",
+          statut: "terminee",
+        },
+        {
+          idTrottinettes: createdTrottinettes[2].idTrottinettes,
+          idTechnicien: technicien.idClient,
+          commentaire: "Remplacement pneu arriere, controle etancheite.",
+          statut: "en_cours",
+        },
+      ],
     });
   }
 

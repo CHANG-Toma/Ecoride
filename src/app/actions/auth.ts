@@ -1,3 +1,7 @@
+/**
+ * Actions serveur d'authentification (bloc 1 — Socle & Auth).
+ * Gere connexion, inscription et deconnexion des utilisateurs.
+ */
 "use server";
 
 import { redirect } from "next/navigation";
@@ -7,6 +11,7 @@ import { getDefaultRedirectForRole } from "@/lib/auth/roles";
 import { createSession, destroySession } from "@/lib/auth/session";
 import type { AuthActionState } from "@/types/auth";
 
+/** Verifie les identifiants et cree une session JWT, puis redirige selon le role. */
 export async function loginAction(
   _prevState: AuthActionState,
   formData: FormData,
@@ -41,6 +46,7 @@ export async function loginAction(
   redirect(getDefaultRedirectForRole(user.role as "client" | "technicien" | "admin"));
 }
 
+/** Cree un compte client, hash le mot de passe et connecte automatiquement. */
 export async function registerAction(
   _prevState: AuthActionState,
   formData: FormData,
@@ -95,6 +101,7 @@ export async function registerAction(
   redirect("/compte");
 }
 
+/** Supprime le cookie de session et redirige vers la page de connexion. */
 export async function logoutAction(): Promise<void> {
   await destroySession();
   redirect("/connexion");

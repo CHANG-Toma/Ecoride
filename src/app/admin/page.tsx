@@ -1,6 +1,5 @@
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
-import { LogoutButton } from "@/components/auth/logout-button";
 import { getSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 
@@ -28,7 +27,6 @@ export default async function AdminPage() {
             CRUD produits, gestion utilisateurs et dashboard ventes seront developpes dans la partie
             Back-office Admin.
           </p>
-          <LogoutButton />
         </div>
       </main>
       <Footer />

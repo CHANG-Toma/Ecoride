@@ -1,6 +1,5 @@
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
-import { LogoutButton } from "@/components/auth/logout-button";
 import { getSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 
@@ -37,7 +36,6 @@ export default async function ComptePage() {
           <p className="text-sm text-slate-500">
             Historique des commandes et garanties seront disponibles dans la partie Espace client.
           </p>
-          <LogoutButton />
         </div>
       </main>
       <Footer />

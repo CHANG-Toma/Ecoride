@@ -1,3 +1,7 @@
+/**
+ * Middleware de protection des routes (bloc 1 — Auth).
+ * Redirige vers /connexion si non connecte, bloque l'acces selon le role.
+ */
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { canAccessRoute } from "@/lib/auth/roles";
