@@ -72,17 +72,33 @@ Mot de passe pour tous les comptes: `EcoRide2026!`
 src/
   app/
     actions/auth.ts       # Server actions login/register/logout
+    actions/atelier.ts    # Sorties stock + reparations
     connexion/            # Page connexion
     inscription/          # Page inscription
     compte/               # Espace client (protege)
     atelier/              # Espace technicien (protege)
     admin/                # Back-office (protege)
   components/auth/        # Formulaires auth
+  components/atelier/     # Inventaire, sorties, reparations
   lib/auth/               # Session, mots de passe, roles
+  lib/atelier/            # Requetes atelier
   middleware.ts           # Protection des routes
   types/auth.ts           # Types partages
+  types/atelier.ts        # Types atelier
 prisma/seed.ts            # Donnees de test
 ```
+
+## Partie 5 - Atelier / SAV
+
+### Fonctionnalites livrees
+
+- **US-A1** Inventaire : tableau stock, recherche, filtres categorie, alerte seuil
+- **US-A2** Reparations : formulaire + historique par trottinette
+- **US-A3** Sorties de stock : decrement automatique + journal des sorties
+
+### Acces
+
+Connectez-vous avec `technicien@ecoride.test` ou `admin@ecoride.test` puis allez sur `/atelier`.
 
 ## Logique metier initiale (repris du CDC)
 

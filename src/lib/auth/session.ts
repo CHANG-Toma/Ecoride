@@ -1,3 +1,7 @@
+/**
+ * Gestion des sessions utilisateur via JWT dans un cookie httpOnly.
+ * Utilise par le login, le middleware et les pages protegees.
+ */
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 import type { SessionUser, UserRole } from "@/types/auth";
@@ -20,6 +24,7 @@ function isUserRole(value: string): value is UserRole {
   return ROLES.includes(value as UserRole);
 }
 
+/** Cree un token JWT et le stocke dans le cookie de session (7 jours). */
 export async function createSession(user: SessionUser): Promise<void> {
   const token = await new SignJWT({
     idClient: user.idClient,
@@ -43,11 +48,13 @@ export async function createSession(user: SessionUser): Promise<void> {
   });
 }
 
+/** Supprime le cookie de session (deconnexion). */
 export async function destroySession(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(SESSION_COOKIE);
 }
 
+/** Lit et valide la session courante depuis les cookies (Server Components). */
 export async function getSession(): Promise<SessionUser | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
@@ -82,6 +89,7 @@ export async function getSession(): Promise<SessionUser | null> {
   }
 }
 
+/** Valide un token JWT — utilise par le middleware cote Edge. */
 export async function verifySessionToken(token: string): Promise<SessionUser | null> {
   try {
     const { payload } = await jwtVerify(token, getSessionSecret());
