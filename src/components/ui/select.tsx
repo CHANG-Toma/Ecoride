@@ -33,12 +33,10 @@ export function Select({
         className={`h-11 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 ${className}`}
         {...props}
       >
-        {placeholder ? (
-          <option value="">{placeholder}</option>
-        ) : null}
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
+        {placeholder ? <option value="">{placeholder}</option> : null}
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
           </option>
         ))}
       </select>
