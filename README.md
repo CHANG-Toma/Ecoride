@@ -30,13 +30,59 @@ npx prisma generate
 npx prisma migrate dev --name init
 ```
 
-4. Lancer le serveur Next.js:
+4. Ajouter `SESSION_SECRET` dans `.env` (minimum 32 caracteres).
+
+5. Peupler la base avec les donnees de test:
+
+```bash
+npm run db:seed
+```
+
+6. Lancer le serveur Next.js:
 
 ```bash
 npm run dev
 ```
 
 Application disponible sur [http://localhost:3000](http://localhost:3000).
+
+## Partie 1 - Socle & Auth
+
+### Fonctionnalites livrees
+
+- Connexion / inscription / deconnexion
+- Sessions JWT securisees (cookie httpOnly)
+- Roles: `client`, `technicien`, `admin`
+- Protection des routes `/compte`, `/atelier`, `/admin`
+- Seed: categories, trottinettes, stocks, comptes de test
+
+### Comptes de test (apres `npm run db:seed`)
+
+Mot de passe pour tous les comptes: `EcoRide2026!`
+
+| Email | Role | Redirection |
+|-------|------|-------------|
+| `client@ecoride.test` | client | `/compte` |
+| `technicien@ecoride.test` | technicien | `/atelier` |
+| `admin@ecoride.test` | admin | `/admin` |
+
+### Structure ajoutee
+
+```
+src/
+  app/
+    actions/auth.ts       # Server actions login/register/logout
+    connexion/            # Page connexion
+    inscription/          # Page inscription
+    compte/               # Espace client (protege)
+    atelier/              # Espace technicien (protege)
+    admin/                # Back-office (protege)
+  components/auth/        # Formulaires auth
+  lib/auth/               # Session, mots de passe, roles
+  middleware.ts           # Protection des routes
+  types/auth.ts           # Types partages
+prisma/seed.ts            # Donnees de test
+```
 
 ## Logique metier initiale (repris du CDC)
 
