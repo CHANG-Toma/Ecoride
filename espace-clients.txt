@@ -1,0 +1,80 @@
+# Walkthrough — Espace Client EcoRide
+
+> Build `npm run build` : ✅ 0 erreur — 13 routes dynamiques compilées.
+
+---
+
+## Ce qui a été créé
+
+### Composants partagés (réutilisés par les 3 rôles)
+
+| Fichier | Rôle |
+|---|---|
+| [sidebar-nav.tsx](file:///c:/Users/elias/Documents/Projets/Ecoride/src/components/dashboard/sidebar-nav.tsx) | Navigation latérale adaptée au rôle + couleur d'accent distincte |
+| [stat-card.tsx](file:///c:/Users/elias/Documents/Projets/Ecoride/src/components/dashboard/stat-card.tsx) | Carte statistique avec icône et barre colorée |
+| [order-status-badge.tsx](file:///c:/Users/elias/Documents/Projets/Ecoride/src/components/dashboard/order-status-badge.tsx) | Badge coloré selon le statut de commande |
+| [profile-form.tsx](file:///c:/Users/elias/Documents/Projets/Ecoride/src/components/dashboard/profile-form.tsx) | Formulaire profil + changement mdp (client-side, `useActionState`) |
+| [actions/compte.ts](file:///c:/Users/elias/Documents/Projets/Ecoride/src/app/actions/compte.ts) | Server Actions : `updateProfileAction`, `updatePasswordAction` |
+
+---
+
+## Espace CLIENT (`role: client`) → `/compte`
+
+**Couleur : vert `--primary`**
+
+| Route | Description |
+|---|---|
+| [/compte](file:///c:/Users/elias/Documents/Projets/Ecoride/src/app/compte/page.tsx) | Dashboard : bannière, stats (nb commandes, total dépensé, date inscription), 5 dernières commandes, résumé profil |
+| [/compte/commandes](file:///c:/Users/elias/Documents/Projets/Ecoride/src/app/compte/commandes/page.tsx) | Liste complète des commandes avec articles, statuts et montants |
+| [/compte/commandes/[id]](file:///c:/Users/elias/Documents/Projets/Ecoride/src/app/compte/commandes/%5Bid%5D/page.tsx) | Détail complet : lignes de commande, caractéristiques trottinette, facture |
+| [/compte/parametres](file:///c:/Users/elias/Documents/Projets/Ecoride/src/app/compte/parametres/page.tsx) | Modification du profil + changement de mot de passe |
+
+**Connexion de test :** `client@ecoride.test` / `EcoRide2026!`
+
+---
+
+## Espace TECHNICIEN (`role: technicien`) → `/atelier`
+
+**Couleur : bleu `--accent`**
+
+| Route | Description |
+|---|---|
+| [/atelier](file:///c:/Users/elias/Documents/Projets/Ecoride/src/app/atelier/page.tsx) | Dashboard : stats stocks, liste des alertes critiques, barres de progression par modèle |
+| [/atelier/stock](file:///c:/Users/elias/Documents/Projets/Ecoride/src/app/atelier/stock/page.tsx) | Inventaire complet en tableau : qté dispo, seuil, état (OK / Alerte / Rupture) |
+| [/atelier/parametres](file:///c:/Users/elias/Documents/Projets/Ecoride/src/app/atelier/parametres/page.tsx) | Paramètres du compte technicien |
+
+**Connexion de test :** `technicien@ecoride.test` / `EcoRide2026!`
+
+---
+
+## Espace ADMIN (`role: admin`) → `/admin`
+
+**Couleur : violet `#7c3aed`**
+
+| Route | Description |
+|---|---|
+| [/admin](file:///c:/Users/elias/Documents/Projets/Ecoride/src/app/admin/page.tsx) | Dashboard : 4 KPIs globaux, répartition par rôle, 6 dernières commandes |
+| [/admin/utilisateurs](file:///c:/Users/elias/Documents/Projets/Ecoride/src/app/admin/utilisateurs/page.tsx) | Tableau de tous les utilisateurs avec rôle, ville, nb commandes, date inscription |
+| [/admin/commandes](file:///c:/Users/elias/Documents/Projets/Ecoride/src/app/admin/commandes/page.tsx) | Vue globale de toutes les commandes avec CA total affiché |
+| [/admin/parametres](file:///c:/Users/elias/Documents/Projets/Ecoride/src/app/admin/parametres/page.tsx) | Paramètres du compte admin |
+
+**Connexion de test :** `admin@ecoride.test` / `EcoRide2026!`
+
+---
+
+## Sécurité
+
+Le middleware existant protège **automatiquement** toutes les sous-routes via préfixe :
+- `/compte/*` → rôles `client` et `admin` uniquement
+- `/atelier/*` → rôles `technicien` et `admin` uniquement
+- `/admin/*` → rôle `admin` uniquement
+
+Tout accès cross-rôle déclenche une redirection vers `/connexion`.
+
+---
+
+## Prochaines étapes suggérées
+
+- Committer sur `feat/espace-client` et ouvrir une PR vers `dev`
+- Ajouter des commandes de test via Prisma Studio (`npm run db:studio`)
+- Intégrer le lien "Catalogue" dans la navbar (bloc 2 — Site vitrine)
