@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: ecoride
       POSTGRES_PASSWORD: ecoride_dev_password
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - ecoride_pgdata:/var/lib/postgresql/data
     healthcheck:
